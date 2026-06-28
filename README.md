@@ -12,28 +12,49 @@
 
 <div align="center">
 
-![Metrics](https://raw.githubusercontent.com/Anikor/Anikor/main/github-metrics.svg)
+<table width="100%">
+  <tr>
+    <td width="55%" align="center" valign="top">
+      <img
+        src="https://raw.githubusercontent.com/Anikor/Anikor/main/github-metrics.svg"
+        alt="GitHub Metrics"
+        width="100%"
+      />
+    </td>
+    <td width="45%" align="center" valign="top">
+      <img
+        src="https://leetcard.jacoblin.cool/Anikor?theme=dark&font=Fira%20Code&ext=activity"
+        alt="LeetCode Recent Activity"
+        width="100%"
+      />
+      <br/><br/>
+      <img
+        src="https://raw.githubusercontent.com/Anikor/Anikor/main/leetcode-heatmap.svg"
+        alt="LeetCode Heatmap"
+        width="100%"
+      />
+    </td>
+  </tr>
+</table>
 
-</div>
 
 
 </div>
 
 ---
 
-### 🙋 About me
+### > About me
 
-I'm a Robotics Engineering student with a thing for building systems that exist in the physical world, not just on a screen. My work lives at the boundary between hardware and software: I design circuits, wire up microcontrollers, write the code that makes them do something useful, and then figure out how to make it actually work in real life.
+I'm a Robotics Engineering student focused on building systems that interact with the physical world, not just software on a screen. My work sits at the intersection of hardware and software: designing circuits, working with microcontrollers, writing embedded code, and refining prototypes for real-world use.
 
-My most meaningful project so far is a **bidirectional assistive communication system** — a glove with flex sensors that reads hand gestures and converts them to voice, while also doing the reverse: turning speech into robotic hand movements. It's the kind of problem that genuinely matters, and it earned a special award at an international microcontroller competition. I've also published two academic papers and presented at my university research conference.
+My most meaningful project so far is a **bidirectional assistive communication system**: a glove with flex sensors that translates hand gestures into speech, while also converting speech into robotic hand movements. The project earned a special award at an international microcontroller competition. I have also published two academic papers and presented my work at my university research conference.
 
-Outside of robotics, I self-host my own projects on a Raspberry Pi, have a background in web development from college, and spend way too much time on circuits and 3D softs. I care about making things that not just functional and well-crafted, but also highly resource-efficient.
-
+Outside of robotics, I self-host projects on a Raspberry Pi, have a background in web development, and work with circuits, CAD, and 3D design tools. I care about building systems that are not only functional and well-crafted, but also highly resource-efficient.
 
 
 ---
 
-### 🚀 Featured projects
+### > Featured projects
 
 <div align="center">
 
@@ -52,13 +73,13 @@ Outside of robotics, I self-host my own projects on a Raspberry Pi, have a backg
 
 ---
 
-### 🧰 Tech stack
+### > Tech stack
 
 <table width="100%">
   <tr>
     <td width="50%" valign="top">
 
-**🖥️ Languages**
+**Languages**
 
 ![Python](https://img.shields.io/badge/Python-3776AB?style=for-the-badge&logo=python&logoColor=white)
 ![C++](https://img.shields.io/badge/C++-00599C?style=for-the-badge&logo=cplusplus&logoColor=white)
@@ -75,7 +96,7 @@ Outside of robotics, I self-host my own projects on a Raspberry Pi, have a backg
 </td>
     <td width="50%" valign="top">
 
-**⚙️ Embedded & hardware**
+**Embedded & hardware**
 
 ![ESP32](https://img.shields.io/badge/ESP32-E7352C?style=for-the-badge&logo=espressif&logoColor=white)
 ![Raspberry Pi](https://img.shields.io/badge/Raspberry_Pi-C51A4A?style=for-the-badge&logo=raspberry-pi&logoColor=white)
@@ -88,7 +109,7 @@ Outside of robotics, I self-host my own projects on a Raspberry Pi, have a backg
   <tr>
     <td width="50%" valign="top">
 
-**🛠️ Tools & platforms**
+**Tools & platforms**
 
 ![Telegram](https://img.shields.io/badge/Telegram_API-2CA5E0?style=for-the-badge&logo=telegram&logoColor=white)
 ![n8n](https://img.shields.io/badge/n8n-EA4B71?style=for-the-badge&logo=n8n&logoColor=white)
@@ -105,7 +126,7 @@ Outside of robotics, I self-host my own projects on a Raspberry Pi, have a backg
 </td>
     <td width="50%" valign="top">
 
-**🎨 Design & 3D**
+**Design & 3D**
 
 ![Blender](https://img.shields.io/badge/Blender-F5792A?style=for-the-badge&logo=blender&logoColor=white)
 ![Autodesk Fusion](https://img.shields.io/badge/Fusion_360-0696D7?style=for-the-badge&logo=autodesk&logoColor=white)
