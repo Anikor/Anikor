@@ -1,7 +1,7 @@
 <div align="center">
 
 <!-- Animated typing header -->
-[![Typing SVG](https://readme-typing-svg.demolab.com?font=Fira+Code&weight=700&size=26&pause=1000&color=A855F7&center=true&vCenter=true&width=700&lines=Hey+there%2C+I'm+Anikor;Robotics+Student;Love+Building+Embedded+Systems+%E2%9D%A4%EF%B8%8F;Building+things+that+move%2C+sense+%26+respond)](https://git.io/typing-svg)
+[![Typing SVG](https://readme-typing-svg.demolab.com?font=Fira+Code&weight=700&size=26&pause=700&color=A855F7&center=true&vCenter=true&width=700&lines=Hey+there%2C+I'm+Anikor;Robotics+Student;Love+Building+Embedded+Systems+%E2%9D%A4%EF%B8%8F;Building+things+that+move%2C+sense+%26+respond)](https://git.io/typing-svg)
 
 <br/>
 
@@ -12,7 +12,7 @@
 
 <div align="center">
 
-<table width="100%">
+<table width="100%" border="0">
   <tr>
     <td width="55%" align="center" valign="top">
       <img
@@ -36,7 +36,7 @@
     </td>
   </tr>
 </table>
-
+</div>
 
 
 </div>
