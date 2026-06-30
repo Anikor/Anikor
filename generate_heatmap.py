@@ -177,31 +177,17 @@ def build_svg(calendar: dict[int, int]) -> str:
   <title id="title">LeetCode Heatmap (Last 52 Weeks)</title>
   <desc id="desc">LeetCode heatmap for {escape(USERNAME)} over the last 52 weeks</desc>
 
-  <style>
+    <style>
     :root {{
-      --bg: #ffffff;
-      --border: #d0d7de;
-      --title: #24292f;
-      --text: #57606a;
-      --empty: #ebedf0;
-      --l1: #9be9a8;
-      --l2: #40c463;
-      --l3: #30a14e;
-      --l4: #216e39;
-    }}
-
-    @media (prefers-color-scheme: dark) {{
-      :root {{
-        --bg: #0d1117;
-        --border: #30363d;
-        --title: #e6edf3;
-        --text: #8b949e;
-        --empty: #161b22;
-        --l1: #0e4429;
-        --l2: #006d32;
-        --l3: #26a641;
-        --l4: #39d353;
-      }}
+      --bg: #0d1117;
+      --border: #30363d;
+      --title: #e6edf3;
+      --text: #8b949e;
+      --empty: #161b22;
+      --l1: #0e4429;
+      --l2: #006d32;
+      --l3: #26a641;
+      --l4: #39d353;
     }}
 
     .card {{
