@@ -11,6 +11,7 @@ USERNAME = "Anikor"
 OUTPUT_FILE = "leetcode-heatmap.svg"
 
 GRAPHQL_URL = "https://leetcode.com/graphql"
+
 QUERY = """
 query userProfileCalendar($username: String!) {
   matchedUser(username: $username) {
@@ -39,11 +40,7 @@ def fetch_heatmap(username: str) -> dict[int, int]:
             "Accept": "application/json",
             "Origin": "https://leetcode.com",
             "Referer": f"https://leetcode.com/u/{username}/",
-            "User-Agent": (
-                "Mozilla/5.0 (X11; Linux x86_64) "
-                "AppleWebKit/537.36 (KHTML, like Gecko) "
-                "Chrome/126.0 Safari/537.36"
-            ),
+            "User-Agent": "Mozilla/5.0",
         },
         method="POST",
     )
@@ -71,7 +68,7 @@ def fetch_heatmap(username: str) -> dict[int, int]:
     return {int(timestamp): int(count) for timestamp, count in parsed.items()}
 
 
-def color_level(count: int) -> int:
+def level_for_count(count: int) -> int:
     if count <= 0:
         return 0
     if count == 1:
@@ -84,91 +81,99 @@ def color_level(count: int) -> int:
 
 
 def build_svg(calendar: dict[int, int]) -> str:
-    # Card size tuned to fit nicely in GitHub profile widgets
     card_w = 720
-    card_h = 220
-    pad_x = 18
-    pad_y = 16
+    card_h = 205
 
-    # Grid settings
+    pad_x = 20
+    pad_y = 18
+
     cell = 10
     gap = 2
     step = cell + gap
+
     weeks = 53
-    rows = 7
+    days = 7
 
     grid_w = weeks * step - gap
-    grid_h = rows * step - gap
+    grid_h = days * step - gap
 
-    # Start from Sunday and render full 53-week grid
     today = datetime.now(timezone.utc).replace(hour=0, minute=0, second=0, microsecond=0)
+
     days_since_sunday = (today.weekday() + 1) % 7
     current_week_sunday = today - timedelta(days=days_since_sunday)
+
     start = current_week_sunday - timedelta(weeks=52)
-    end = start + timedelta(days=weeks * 7 - 1)
+    end = start + timedelta(days=weeks * days - 1)
 
     cells: list[tuple[datetime, int]] = []
-    day = start
-    while day <= end:
-        timestamp = int(day.timestamp())
-        cells.append((day, calendar.get(timestamp, 0)))
-        day += timedelta(days=1)
+
+    current = start
+    while current <= end:
+        timestamp = int(current.timestamp())
+        cells.append((current, calendar.get(timestamp, 0)))
+        current += timedelta(days=1)
 
     visible_total = sum(count for _, count in cells)
     active_days = sum(1 for _, count in cells if count > 0)
 
-    # Month labels
-    month_labels: list[tuple[int, str]] = []
-    last_seen = None
-    for i, (day, _) in enumerate(cells):
-        if day.day == 1 or (i == 0):
-            col = i // 7
-            label = day.strftime("%b")
-            key = (day.year, day.month)
-            if key != last_seen and col < weeks:
-                month_labels.append((col, label))
-                last_seen = key
-
-    title_y = pad_y + 18
-    month_y = pad_y + 42
+    title_y = pad_y + 16
+    months_y = pad_y + 42
     grid_y = pad_y + 52
     footer_y = grid_y + grid_h + 24
 
     grid_x = (card_w - grid_w) // 2
 
+    month_labels: list[tuple[int, str]] = []
+    last_month = None
+
+    for i, (day, _) in enumerate(cells):
+        col = i // 7
+
+        if i == 0 or day.day == 1:
+            current_month = (day.year, day.month)
+
+            if current_month != last_month and col < weeks:
+                month_labels.append((col, day.strftime("%b")))
+                last_month = current_month
+
     month_svg = "\n".join(
-        f'<text class="month" x="{grid_x + col * step}" y="{month_y}">{escape(label)}</text>'
+        f'<text class="month" x="{grid_x + col * step}" y="{months_y}">{escape(label)}</text>'
         for col, label in month_labels
     )
 
     rects = []
+
     for i, (day, count) in enumerate(cells):
         col = i // 7
         row = i % 7
+
         x = grid_x + col * step
         y = grid_y + row * step
-        level = color_level(count)
-        submissions_word = "submission" if count == 1 else "submissions"
-        tooltip = f"{day.strftime('%Y-%m-%d')}: {count} {submissions_word}"
+
+        level = level_for_count(count)
+        word = "submission" if count == 1 else "submissions"
+        title = f"{day.strftime('%Y-%m-%d')}: {count} {word}"
 
         rects.append(
-            f'<rect x="{x}" y="{y}" width="{cell}" height="{cell}" rx="2" '
-            f'class="level-{level}"><title>{escape(tooltip)}</title></rect>'
+            f'<rect class="level-{level}" x="{x}" y="{y}" width="{cell}" height="{cell}" rx="2">'
+            f'<title>{escape(title)}</title>'
+            f'</rect>'
         )
 
     legend_cell = 10
     legend_gap = 4
-    legend_total_w = 5 * legend_cell + 4 * legend_gap
-    legend_x = card_w - pad_x - legend_total_w - 34
+    legend_w = 5 * legend_cell + 4 * legend_gap
+
+    legend_x = card_w - pad_x - legend_w - 34
     legend_y = footer_y - 10
 
     legend_rects = "\n".join(
-        f'<rect x="{legend_x + i * (legend_cell + legend_gap)}" y="{legend_y}" '
-        f'width="{legend_cell}" height="{legend_cell}" rx="2" class="level-{i}" />'
+        f'<rect class="level-{i}" x="{legend_x + i * (legend_cell + legend_gap)}" y="{legend_y}" '
+        f'width="{legend_cell}" height="{legend_cell}" rx="2" />'
         for i in range(5)
     )
 
-    svg = f'''<svg width="{card_w}" height="{card_h}" viewBox="0 0 {card_w} {card_h}" fill="none" xmlns="http://www.w3.org/2000/svg" role="img" aria-labelledby="title desc">
+    return f'''<svg width="{card_w}" height="{card_h}" viewBox="0 0 {card_w} {card_h}" fill="none" xmlns="http://www.w3.org/2000/svg" role="img" aria-labelledby="title desc">
   <title id="title">LeetCode Heatmap (Last 52 Weeks)</title>
   <desc id="desc">LeetCode heatmap for {escape(USERNAME)} over the last 52 weeks</desc>
 
@@ -206,22 +211,22 @@ def build_svg(calendar: dict[int, int]) -> str:
 
     .title {{
       fill: var(--title);
-      font: 600 16px -apple-system,BlinkMacSystemFont,"Segoe UI",Helvetica,Arial,sans-serif;
+      font: 600 16px -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif;
     }}
 
     .month {{
       fill: var(--text);
-      font: 11px -apple-system,BlinkMacSystemFont,"Segoe UI",Helvetica,Arial,sans-serif;
+      font: 11px -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif;
     }}
 
     .meta {{
       fill: var(--text);
-      font: 12px -apple-system,BlinkMacSystemFont,"Segoe UI",Helvetica,Arial,sans-serif;
+      font: 12px -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif;
     }}
 
     .legend {{
       fill: var(--text);
-      font: 11px -apple-system,BlinkMacSystemFont,"Segoe UI",Helvetica,Arial,sans-serif;
+      font: 11px -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif;
     }}
 
     .level-0 {{ fill: var(--empty); }}
@@ -243,18 +248,78 @@ def build_svg(calendar: dict[int, int]) -> str:
 
   <text class="legend" x="{legend_x - 30}" y="{legend_y + 9}">Less</text>
   {legend_rects}
-  <text class="legend" x="{legend_x + legend_total_w + 8}" y="{legend_y + 9}">More</text>
+  <text class="legend" x="{legend_x + legend_w + 8}" y="{legend_y + 9}">More</text>
 </svg>
 '''
-    return svg
 
 
 def main() -> None:
     calendar = fetch_heatmap(USERNAME)
     svg = build_svg(calendar)
     Path(OUTPUT_FILE).write_text(svg, encoding="utf-8")
-    print(f"✓ {OUTPUT_FILE} written")
+    print(f"{OUTPUT_FILE} written")
 
 
 if __name__ == "__main__":
     main()
+PY
+
+mkdir -p .github/workflows
+
+cat > .github/workflows/heatmap.yml <<'YAML'
+name: Generate LeetCode Heatmap
+
+on:
+  schedule:
+    - cron: "0 */6 * * *"
+  workflow_dispatch:
+  push:
+    branches:
+      - main
+
+permissions:
+  contents: write
+
+concurrency:
+  group: leetcode-heatmap
+  cancel-in-progress: true
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Generate heatmap SVG
+        run: python generate_heatmap.py
+
+      - name: Commit and push heatmap
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+
+          git add leetcode-heatmap.svg
+
+          if git diff --cached --quiet; then
+            echo "No heatmap changes to commit."
+          else
+            git commit -m "chore: update leetcode heatmap [skip ci]"
+            git push origin main
+          fi
+YAML
+
+python3 generate_heatmap.py
+
+git add generate_heatmap.py .github/workflows/heatmap.yml leetcode-heatmap.svg
+git commit -m "redesign leetcode heatmap widget"
+git push origin main
