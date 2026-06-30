@@ -23,9 +23,6 @@ query userProfileCalendar($username: String!) {
 """
 
 
-COLORS = ["#1e2030", "#003820", "#006d32", "#26a641", "#39d353"]
-
-
 def fetch_heatmap(username: str) -> dict[int, int]:
     payload = json.dumps(
         {
@@ -74,139 +71,182 @@ def fetch_heatmap(username: str) -> dict[int, int]:
     return {int(timestamp): int(count) for timestamp, count in parsed.items()}
 
 
-def color_for_count(count: int) -> str:
+def color_level(count: int) -> int:
     if count <= 0:
-        return COLORS[0]
+        return 0
     if count == 1:
-        return COLORS[1]
+        return 1
     if count <= 3:
-        return COLORS[2]
+        return 2
     if count <= 6:
-        return COLORS[3]
-    return COLORS[4]
+        return 3
+    return 4
 
 
 def build_svg(calendar: dict[int, int]) -> str:
-    card_w = 495
-    pad = 20
+    # Card size tuned to fit nicely in GitHub profile widgets
+    card_w = 720
+    card_h = 220
+    pad_x = 18
+    pad_y = 16
 
+    # Grid settings
     cell = 10
-    cell_gap = 2
-    step = cell + cell_gap
+    gap = 2
+    step = cell + gap
     weeks = 53
-    days = 7
+    rows = 7
 
-    grid_w = weeks * step - cell_gap
-    grid_h = days * step - cell_gap
+    grid_w = weeks * step - gap
+    grid_h = rows * step - gap
 
-    card_h = 255
-    inner_w = card_w - pad * 2
-
-    bg = "#1a1a2e"
-    border = "#2d2d44"
-    text_primary = "#ffffff"
-    text_secondary = "#aaaabb"
-    orange = "#ffa116"
-    divider = "#2d2d44"
-
+    # Start from Sunday and render full 53-week grid
     today = datetime.now(timezone.utc).replace(hour=0, minute=0, second=0, microsecond=0)
-
-    # End the grid on Saturday, like GitHub-style contribution calendars.
-    days_to_saturday = (5 - today.weekday()) % 7
-    week_end = today + timedelta(days=days_to_saturday)
-    start = week_end - timedelta(weeks=weeks) + timedelta(days=1)
+    days_since_sunday = (today.weekday() + 1) % 7
+    current_week_sunday = today - timedelta(days=days_since_sunday)
+    start = current_week_sunday - timedelta(weeks=52)
+    end = start + timedelta(days=weeks * 7 - 1)
 
     cells: list[tuple[datetime, int]] = []
-    current_day = start
-    while current_day <= week_end:
-        timestamp = int(current_day.timestamp())
-        cells.append((current_day, calendar.get(timestamp, 0)))
-        current_day += timedelta(days=1)
+    day = start
+    while day <= end:
+        timestamp = int(day.timestamp())
+        cells.append((day, calendar.get(timestamp, 0)))
+        day += timedelta(days=1)
 
-    # Python: Monday=0, Sunday=6. SVG heatmap: Sunday=0.
-    col_offset = (start.weekday() + 1) % 7
-
-    month_labels: list[tuple[int, str]] = []
-    last_month = -1
-    for i, (day, _) in enumerate(cells):
-        col = (i + col_offset) // 7
-        if day.month != last_month and col < weeks:
-            month_labels.append((col, day.strftime("%b")))
-            last_month = day.month
-
-    y_header = pad
-    y_divider = y_header + 46
-    y_title = y_divider + 28
-    y_months = y_title + 22
-    y_grid = y_months + 14
-    y_legend = y_grid + grid_h + 10
-    grid_x = pad + (inner_w - grid_w) // 2
-
-    total_submissions = sum(calendar.values())
+    visible_total = sum(count for _, count in cells)
     active_days = sum(1 for _, count in cells if count > 0)
 
+    # Month labels
+    month_labels: list[tuple[int, str]] = []
+    last_seen = None
+    for i, (day, _) in enumerate(cells):
+        if day.day == 1 or (i == 0):
+            col = i // 7
+            label = day.strftime("%b")
+            key = (day.year, day.month)
+            if key != last_seen and col < weeks:
+                month_labels.append((col, label))
+                last_seen = key
+
+    title_y = pad_y + 18
+    month_y = pad_y + 42
+    grid_y = pad_y + 52
+    footer_y = grid_y + grid_h + 24
+
+    grid_x = (card_w - grid_w) // 2
+
     month_svg = "\n".join(
-        f'<text x="{grid_x + col * step}" y="{y_months}" '
-        f'fill="{text_secondary}" font-size="9" font-family="Inter, Arial, sans-serif">'
-        f'{escape(label)}</text>'
+        f'<text class="month" x="{grid_x + col * step}" y="{month_y}">{escape(label)}</text>'
         for col, label in month_labels
     )
 
     rects = []
     for i, (day, count) in enumerate(cells):
-        idx = i + col_offset
-        x = grid_x + (idx // 7) * step
-        y = y_grid + (idx % 7) * step
-        fill = color_for_count(count)
+        col = i // 7
+        row = i % 7
+        x = grid_x + col * step
+        y = grid_y + row * step
+        level = color_level(count)
         submissions_word = "submission" if count == 1 else "submissions"
-        title = f"{day.strftime('%Y-%m-%d')}: {count} {submissions_word}"
+        tooltip = f"{day.strftime('%Y-%m-%d')}: {count} {submissions_word}"
 
         rects.append(
             f'<rect x="{x}" y="{y}" width="{cell}" height="{cell}" rx="2" '
-            f'fill="{fill}"><title>{escape(title)}</title></rect>'
+            f'class="level-{level}"><title>{escape(tooltip)}</title></rect>'
         )
 
-    legend_cell = cell
-    legend_gap = 3
-    legend_total_w = len(COLORS) * (legend_cell + legend_gap) - legend_gap
-    legend_x = card_w - pad - legend_total_w - 36
-    legend_y = y_legend + 2
+    legend_cell = 10
+    legend_gap = 4
+    legend_total_w = 5 * legend_cell + 4 * legend_gap
+    legend_x = card_w - pad_x - legend_total_w - 34
+    legend_y = footer_y - 10
 
-    legend_svg = "\n".join(
+    legend_rects = "\n".join(
         f'<rect x="{legend_x + i * (legend_cell + legend_gap)}" y="{legend_y}" '
-        f'width="{legend_cell}" height="{legend_cell}" rx="2" fill="{color}" />'
-        for i, color in enumerate(COLORS)
+        f'width="{legend_cell}" height="{legend_cell}" rx="2" class="level-{i}" />'
+        for i in range(5)
     )
 
-    logo_x = pad + 2
-    logo_y = y_header + 2
+    svg = f'''<svg width="{card_w}" height="{card_h}" viewBox="0 0 {card_w} {card_h}" fill="none" xmlns="http://www.w3.org/2000/svg" role="img" aria-labelledby="title desc">
+  <title id="title">LeetCode Heatmap (Last 52 Weeks)</title>
+  <desc id="desc">LeetCode heatmap for {escape(USERNAME)} over the last 52 weeks</desc>
 
-    return f'''<svg width="{card_w}" height="{card_h}" viewBox="0 0 {card_w} {card_h}" fill="none" xmlns="http://www.w3.org/2000/svg" role="img" aria-labelledby="title desc">
-  <title id="title">LeetCode Heatmap</title>
-  <desc id="desc">Last 52 weeks of LeetCode submissions for {escape(USERNAME)}</desc>
+  <style>
+    :root {{
+      --bg: #ffffff;
+      --border: #d0d7de;
+      --title: #24292f;
+      --text: #57606a;
+      --empty: #ebedf0;
+      --l1: #9be9a8;
+      --l2: #40c463;
+      --l3: #30a14e;
+      --l4: #216e39;
+    }}
 
-  <rect width="{card_w}" height="{card_h}" rx="14" fill="{bg}" stroke="{border}" />
+    @media (prefers-color-scheme: dark) {{
+      :root {{
+        --bg: #0d1117;
+        --border: #30363d;
+        --title: #e6edf3;
+        --text: #8b949e;
+        --empty: #161b22;
+        --l1: #0e4429;
+        --l2: #006d32;
+        --l3: #26a641;
+        --l4: #39d353;
+      }}
+    }}
 
-  <circle cx="{logo_x + 16}" cy="{logo_y + 16}" r="16" fill="{orange}" opacity="0.16" />
-  <path d="M{logo_x + 22} {logo_y + 8} L{logo_x + 11} {logo_y + 19} L{logo_x + 22} {logo_y + 30}" stroke="{orange}" stroke-width="4" stroke-linecap="round" stroke-linejoin="round" />
-  <path d="M{logo_x + 18} {logo_y + 19} H{logo_x + 31}" stroke="{orange}" stroke-width="4" stroke-linecap="round" />
+    .card {{
+      fill: var(--bg);
+      stroke: var(--border);
+    }}
 
-  <text x="{pad + 46}" y="{y_header + 17}" fill="{text_primary}" font-size="16" font-weight="700" font-family="Inter, Arial, sans-serif">{escape(USERNAME)}</text>
-  <text x="{pad + 46}" y="{y_header + 36}" fill="{text_secondary}" font-size="11" font-family="Inter, Arial, sans-serif">{total_submissions} submissions · {active_days} active days</text>
+    .title {{
+      fill: var(--title);
+      font: 600 16px -apple-system,BlinkMacSystemFont,"Segoe UI",Helvetica,Arial,sans-serif;
+    }}
 
-  <line x="{pad}" y="{y_divider}" x2="{card_w - pad}" y2="{y_divider}" stroke="{divider}" />
+    .month {{
+      fill: var(--text);
+      font: 11px -apple-system,BlinkMacSystemFont,"Segoe UI",Helvetica,Arial,sans-serif;
+    }}
 
-  <text x="{pad}" y="{y_title}" fill="{text_primary}" font-size="13" font-weight="600" font-family="Inter, Arial, sans-serif">Heatmap (Last 52 Weeks)</text>
+    .meta {{
+      fill: var(--text);
+      font: 12px -apple-system,BlinkMacSystemFont,"Segoe UI",Helvetica,Arial,sans-serif;
+    }}
+
+    .legend {{
+      fill: var(--text);
+      font: 11px -apple-system,BlinkMacSystemFont,"Segoe UI",Helvetica,Arial,sans-serif;
+    }}
+
+    .level-0 {{ fill: var(--empty); }}
+    .level-1 {{ fill: var(--l1); }}
+    .level-2 {{ fill: var(--l2); }}
+    .level-3 {{ fill: var(--l3); }}
+    .level-4 {{ fill: var(--l4); }}
+  </style>
+
+  <rect class="card" x="0.5" y="0.5" width="{card_w - 1}" height="{card_h - 1}" rx="10" />
+
+  <text class="title" x="{pad_x}" y="{title_y}">LeetCode Heatmap (Last 52 Weeks)</text>
 
   {month_svg}
 
   {"".join(rects)}
 
-  <text x="{legend_x - 30}" y="{legend_y + 9}" fill="{text_secondary}" font-size="9" font-family="Inter, Arial, sans-serif">Less</text>
-  {legend_svg}
-  <text x="{legend_x + legend_total_w + 7}" y="{legend_y + 9}" fill="{text_secondary}" font-size="9" font-family="Inter, Arial, sans-serif">More</text>
+  <text class="meta" x="{pad_x}" y="{footer_y}">{visible_total} submissions · {active_days} active days</text>
+
+  <text class="legend" x="{legend_x - 30}" y="{legend_y + 9}">Less</text>
+  {legend_rects}
+  <text class="legend" x="{legend_x + legend_total_w + 8}" y="{legend_y + 9}">More</text>
 </svg>
 '''
+    return svg
 
 
 def main() -> None:
