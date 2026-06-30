@@ -97,7 +97,12 @@ def build_svg(calendar: dict[int, int]) -> str:
     grid_w = weeks * step - gap
     grid_h = days * step - gap
 
-    today = datetime.now(timezone.utc).replace(hour=0, minute=0, second=0, microsecond=0)
+    today = datetime.now(timezone.utc).replace(
+        hour=0,
+        minute=0,
+        second=0,
+        microsecond=0,
+    )
 
     days_since_sunday = (today.weekday() + 1) % 7
     current_week_sunday = today - timedelta(days=days_since_sunday)
@@ -127,7 +132,7 @@ def build_svg(calendar: dict[int, int]) -> str:
     last_month = None
 
     for i, (day, _) in enumerate(cells):
-        col = i // 7
+        col = i // days
 
         if i == 0 or day.day == 1:
             current_month = (day.year, day.month)
@@ -144,19 +149,19 @@ def build_svg(calendar: dict[int, int]) -> str:
     rects = []
 
     for i, (day, count) in enumerate(cells):
-        col = i // 7
-        row = i % 7
+        col = i // days
+        row = i % days
 
         x = grid_x + col * step
         y = grid_y + row * step
 
         level = level_for_count(count)
         word = "submission" if count == 1 else "submissions"
-        title = f"{day.strftime('%Y-%m-%d')}: {count} {word}"
+        tooltip = f"{day.strftime('%Y-%m-%d')}: {count} {word}"
 
         rects.append(
             f'<rect class="level-{level}" x="{x}" y="{y}" width="{cell}" height="{cell}" rx="2">'
-            f'<title>{escape(title)}</title>'
+            f'<title>{escape(tooltip)}</title>'
             f'</rect>'
         )
 
@@ -177,7 +182,7 @@ def build_svg(calendar: dict[int, int]) -> str:
   <title id="title">LeetCode Heatmap (Last 52 Weeks)</title>
   <desc id="desc">LeetCode heatmap for {escape(USERNAME)} over the last 52 weeks</desc>
 
-    <style>
+  <style>
     :root {{
       --bg: #0d1117;
       --border: #30363d;
@@ -248,64 +253,3 @@ def main() -> None:
 
 if __name__ == "__main__":
     main()
-PY
-
-mkdir -p .github/workflows
-
-cat > .github/workflows/heatmap.yml <<'YAML'
-name: Generate LeetCode Heatmap
-
-on:
-  schedule:
-    - cron: "0 */6 * * *"
-  workflow_dispatch:
-  push:
-    branches:
-      - main
-
-permissions:
-  contents: write
-
-concurrency:
-  group: leetcode-heatmap
-  cancel-in-progress: true
-
-jobs:
-  build:
-    runs-on: ubuntu-latest
-
-    steps:
-      - name: Checkout repo
-        uses: actions/checkout@v4
-        with:
-          fetch-depth: 0
-          token: ${{ secrets.GITHUB_TOKEN }}
-
-      - name: Set up Python
-        uses: actions/setup-python@v5
-        with:
-          python-version: "3.12"
-
-      - name: Generate heatmap SVG
-        run: python generate_heatmap.py
-
-      - name: Commit and push heatmap
-        run: |
-          git config user.name "github-actions[bot]"
-          git config user.email "github-actions[bot]@users.noreply.github.com"
-
-          git add leetcode-heatmap.svg
-
-          if git diff --cached --quiet; then
-            echo "No heatmap changes to commit."
-          else
-            git commit -m "chore: update leetcode heatmap [skip ci]"
-            git push origin main
-          fi
-YAML
-
-python3 generate_heatmap.py
-
-git add generate_heatmap.py .github/workflows/heatmap.yml leetcode-heatmap.svg
-git commit -m "redesign leetcode heatmap widget"
-git push origin main
