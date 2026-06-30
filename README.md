@@ -1,6 +1,5 @@
 <div align="center">
 
-<!-- Animated typing header -->
 [![Typing SVG](https://readme-typing-svg.demolab.com?font=Fira+Code&weight=700&size=26&pause=700&color=A855F7&center=true&vCenter=true&width=700&lines=Hey+there%2C+I'm+Anikor;Robotics+Student;Love+Building+Embedded+Systems+%E2%9D%A4%EF%B8%8F;Building+things+that+move%2C+sense+%26+respond)](https://git.io/typing-svg)
 
 <br/>
@@ -146,9 +145,9 @@ Outside of robotics, I self-host projects on a Raspberry Pi, have a background i
 
 ### ✨ Fun facts
 
-- 🦾 My glove can turn sign language gestures into speech — and speech back into gestures on a robot hand
+- 🦾 My glove can turn sign language gestures into speech - and speech back into gestures on a robot hand
 - 🍓 My first self-hosted project runs on a Raspberry Pi sitting somewhere in my room right now
-- 🎨 I design in Blender, edit in Premiere, draw in Procreate — the creative side is just as real as the technical one
+- 🎨 I design in Blender, edit in Premiere, draw in Procreate - the creative side is just as real as the technical one
 - 📄 Two published/in-press academic papers, both on systems I actually built and tested
 
 ---
