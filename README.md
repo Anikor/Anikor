@@ -58,14 +58,15 @@ Outside of robotics, I self-host projects on a Raspberry Pi, have a background i
 <div align="center">
 
 <a href="https://github.com/Anikor/TG_PazniculGrupei_Bot">
-  <img src="https://github-readme-stats.vercel.app/api/pin/?username=Anikor&repo=TG_PazniculGrupei_Bot&theme=tokyonight&hide_border=true" width="49%" height="150px" />
+  <img src="https://socialify.git.ci/Anikor/TG_PazniculGrupei_Bot/image?description=1&font=Source%20Code%20Pro&language=1&name=1&owner=1&pattern=Circuit%20Board&theme=Dark" width="40%" />
 </a>
+&nbsp;
 <a href="https://github.com/Anikor/NDBTG">
-  <img src="https://github-readme-stats.vercel.app/api/pin/?username=Anikor&repo=NDBTG&theme=tokyonight&hide_border=true" width="49%" height="150px" />
+  <img src="https://socialify.git.ci/Anikor/NDBTG/image?description=1&font=Source%20Code%20Pro&language=1&name=1&owner=1&pattern=Circuit%20Board&theme=Dark" width="40%" />
 </a>
 
 <a href="https://github.com/Anikor/CCC_UTM_Classic_2025">
-  <img src="https://github-readme-stats.vercel.app/api/pin/?username=Anikor&repo=CCC_UTM_Classic_2025&theme=tokyonight&hide_border=true" width="49%" height="150px" />
+  <img src="https://socialify.git.ci/Anikor/CCC_UTM_Classic_2025/image?description=1&font=Source%20Code%20Pro&language=1&name=1&owner=1&pattern=Circuit%20Board&theme=Dark" width="40%" />
 </a>
 
 </div>
@@ -83,10 +84,10 @@ Outside of robotics, I self-host projects on a Raspberry Pi, have a background i
 ![Python](https://img.shields.io/badge/Python-3776AB?style=for-the-badge&logo=python&logoColor=white)
 ![C++](https://img.shields.io/badge/C++-00599C?style=for-the-badge&logo=cplusplus&logoColor=white)
 ![C](https://img.shields.io/badge/C-555555?style=for-the-badge&logo=c&logoColor=white)
-![C#](https://img.shields.io/badge/C%23-239120?style=for-the-badge&logo=c-sharp&logoColor=white)
+![C#](https://img.shields.io/badge/C%23-239120?style=for-the-badge&logo=dotnet&logoColor=white)
 ![PHP](https://img.shields.io/badge/PHP-777BB4?style=for-the-badge&logo=php&logoColor=white)
-![JavaScript](https://img.shields.io/badge/JavaScript-F7DF1E?style=for-the-badge&logo=javascript&logoColor=black)
 ![Java](https://img.shields.io/badge/Java-ED8B00?style=for-the-badge&logo=openjdk&logoColor=white)
+![JavaScript](https://img.shields.io/badge/JavaScript-F7DF1E?style=for-the-badge&logo=javascript&logoColor=black)
 ![Bash](https://img.shields.io/badge/Bash-4EAA25?style=for-the-badge&logo=gnubash&logoColor=white)
 ![SQL](https://img.shields.io/badge/SQL-4479A1?style=for-the-badge&logo=mysql&logoColor=white)
 ![HTML](https://img.shields.io/badge/HTML-E34F26?style=for-the-badge&logo=html5&logoColor=white)
