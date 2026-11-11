@@ -62,8 +62,8 @@ Outside of robotics, I self-host projects on a Raspberry Pi, have a background i
   <img src="https://socialify.git.ci/Anikor/TG_PazniculGrupei_Bot/image?description=1&font=Source%20Code%20Pro&language=1&name=1&owner=1&pattern=Circuit%20Board&theme=Dark" width="40%" />
 </a>
 &nbsp;
-<a href="https://github.com/Anikor/NDBTG">
-  <img src="https://socialify.git.ci/Anikor/NDBTG/image?description=1&font=Source%20Code%20Pro&language=1&name=1&owner=1&pattern=Circuit%20Board&theme=Dark" width="40%" />
+<a href="https://github.com/Anikor/hackathon_ZTS_2026">
+  <img src="https://socialify.git.ci/Anikor/hackathon_ZTS_2026/image?description=1&font=Source%20Code%20Pro&language=1&name=1&owner=1&pattern=Circuit%20Board&theme=Dark" width="40%" />
 </a>
 
 <a href="https://github.com/Anikor/CCC_UTM_Classic_2026">
