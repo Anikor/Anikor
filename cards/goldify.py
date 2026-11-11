@@ -10,8 +10,8 @@ import urllib.request
 
 PARAMS = "description=1&font=Source%20Code%20Pro&language=1&name=1&owner=1&pattern=Circuit%20Board&theme=Dark"
 BG = "#12100c"
-PATTERN = "#b39457"
-OPACITY = "0.32"
+PATTERN = "#a88f5e"
+OPACITY = "0.2"
 
 
 def recolor_inner(match):
